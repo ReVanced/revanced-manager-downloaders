@@ -19,7 +19,9 @@ import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import java.util.Properties
 import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.deleteRecursively
+import kotlin.io.path.fileSize
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.outputStream
 
@@ -98,12 +100,20 @@ val playStoreDownloader = Downloader(R.string.play_store) {
             }
 
             val apkFiles = apkDir.listDirectoryEntries()
-            if (apkFiles.size == 1)
+            if (apkFiles.size == 1) {
                 Files.copy(apkFiles.first(), outputStream)
-            else
-                Merger.merge(apkDir)
-                    .writeApk(outputStream)
+            } else {
+                // The Play Store only serves the splits this device needs, so there is nothing to filter here.
+                val mergedApk = Files.createTempFile("play_dl", ".apk")
+                try {
+                    Merger.merge(apkDir).use { it.writeTo(mergedApk) }
 
+                    reportSize(mergedApk.fileSize())
+                    Files.copy(mergedApk, outputStream)
+                } finally {
+                    mergedApk.deleteIfExists()
+                }
+            }
         } finally {
             apkDir.deleteRecursively()
         }

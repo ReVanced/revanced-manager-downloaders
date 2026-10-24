@@ -74,7 +74,7 @@ The collection of ReVanced downloaders.
 
 ### APKMirror Downloader
 This downloader will open an [APKMirror](https://www.apkmirror.com/) page where you can download the apk as you would normally do.
-If the chosen file is a bundle (`apkm` file), the downloader will automatically merge it into an `apk` file.
+If the chosen file is a bundle (`apkm` file), the downloader will automatically merge it into an `apk` file. Only the splits for your device's architecture, screen density and languages are merged.
 
 ### Play Store Downloader
 When you get prompted, log in to Google with your account. After that, you will be able to download apps from the Play Store.
